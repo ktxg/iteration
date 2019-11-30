@@ -32,9 +32,41 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 We're going to write some functions. 
 
+Here's z-scores: 
+```{r}
+x = rnorm(n = 30, mean = 4, sd = 2.3)
+x_again = rnorm(n = 30, mean = 6, sd = .3)
+
+(x - mean(x)) / sd(x)
+(x_again - mean(x_again)) / sd(x_again)
+```
+
+Now let's write a function: 
+```{r}
+## we're calling it the "z_score function" 
+## it's a function of the variable x and the stuff that's going to be in the body of the function is in between these open curly brackets {}
+## z_score is now going to be an object and that object is going to be a function 
+## the argument into that function is something we're calling "x," also known as the "x argument into the function" 
+
+z_score = function(x) {
+  
+  (x - mean(x)) / sd(x) 
+  
+}
+
+## if you go into the environment tab, we can see there's now a "z_score function" 
+```
+
+Let's try out the function:  
 ```{r}
 
 ```
+
+
+
+
+
+
 
 
 
