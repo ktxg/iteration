@@ -36,6 +36,7 @@ Here's z-scores:
 ```{r}
 x = rnorm(n = 30, mean = 4, sd = 2.3)
 x_again = rnorm(n = 30, mean = 6, sd = .3)
+y = rnorm(n = 30, mean = 24, sd = .3)
 
 (x - mean(x)) / sd(x)
 (x_again - mean(x_again)) / sd(x_again)
@@ -48,25 +49,67 @@ Now let's write a function:
 ## z_score is now going to be an object and that object is going to be a function 
 ## the argument into that function is something we're calling "x," also known as the "x argument into the function" 
 
-z_score = function(x) {
+z_score = function(x_arg) {
   
-  (x - mean(x)) / sd(x) 
+  if (!is.numeric(x_arg)) {
+    stop("x should be numeric")
+  } else if (length(x_arg) < 3) {
+    stop("x should be longer than 3")
+  }
+  
+  (x_arg - mean(x_arg)) / sd(x_arg) 
   
 }
 
 ## if you go into the environment tab, we can see there's now a "z_score function" 
+## so basically: we have a function that has a single argument ("x") and the 'x' inside the function will always look at what that argument is. It will look to see what the user told them what x to use
+## highlight the x in the function to see where it is 
 ```
 
 Let's try out the function:  
-```{r}
+```{r, error = TRUE}
+## these are z-transformations of the vectors that we've created 
 
+z_score(x_arg = y) 
+
+z_score(x_arg = 3) ## NA b/c can't compute the s.d. of one number 
+z_score(x_arg = "my name is jeff") ## error b/c can't computer mean or s.d. of character vector 
+z_score(x_arg = c(TRUE, TRUE, FALSE, TRUE)) ## does give us z-scores back 
+z_score(x_arg = iris) ## doesn't work b/c it's a dataframe 
 ```
 
+## Multiple outputs 
 
+```{r}
+## given one input vector, this spits out more than one output at the same time 
 
+mean_and_sd = function(input_x) {
+  
+  if (!is.numeric(input_x)) {
+    stop("x should be numeric")
+  } else if (length(input_x) < 3) {
+    stop("x should be longer than 3")
+  } 
+  
+  list(
+    mean_input = mean(input_x), 
+    sd_input = sd(input_x), 
+    z_score = (input_x - mean(input_x)) / sd(input_x) 
+  ) 
+  
+  ## we create a tibble() to format these things 
+  ## we can also put it in a list(), which allows us to keep track of things that are not just numbers 
+  
+}
+```
 
+Test this function: 
 
+```{r}
+mean_and_sd(input_x = y) 
+```
 
+## Multiple inputs  
 
 
 
