@@ -221,8 +221,100 @@ So now we have 3 arguments in my function: sample size, intercept, and slope. My
 
 Given that simulated dataset, we're fitting a simple linear regression and our function spits out a tibble with the estimated intercept and estimated slope based on that dataset. 
 
+## Scrape lots of napoleon 
+
+```{r}
+## this is the url that I care about 
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+## first, go get all the html on that webpage 
+## pull in the html at that url 
+dynamite_html = read_html(url)
+
+## given this css(?) selector, I can get the Review Titles
+review_titles = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-title") %>%
+  html_text()
+
+## I can get the review stars that go along with those titles 
+review_stars = 
+  dynamite_html %>%
+  html_nodes("#cm_cr-review_list .review-rating") %>%
+  html_text()
+
+## and I can get the actual text of the review as well 
+review_text = 
+  dynamite_html %>%
+    html_nodes(".review-text-content span") %>%
+    html_text()
+
+## and we can pull all of this together into a tibble 
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+```
+
+Now as a function (since we want to see the reviews for multiple pages)
+**OPTION + SHIFT + CLICK to indent everything**
+```{r}
+read_page_reviews = function(page_url) {
+
+  dynamite_html = read_html(page_url)
+  
+  review_titles = 
+    dynamite_html %>%
+    html_nodes("#cm_cr-review_list .review-title") %>%
+    html_text()
+  
+  review_stars = 
+    dynamite_html %>%
+    html_nodes("#cm_cr-review_list .review-rating") %>%
+    html_text()
+  
+  review_text = 
+    dynamite_html %>%
+      html_nodes(".review-text-content span") %>%
+      html_text()
+  
+  reviews = tibble(
+    title = review_titles,
+    stars = review_stars,
+    text = review_text
+  )
+  
+  reviews
+}
+```
+
+```{r}
+## scraping 4 different pages (page 1, 2, 3, 4)
+
+read_page_reviews("https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1")
+
+read_page_reviews("https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=2")
+
+read_page_reviews("https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=3")
+
+read_page_reviews("https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=4")
+```
 
 
+```{r} 
+f = function(x) {
+  z = x + y
+  z
+}
+
+x = 1
+y = 2
+
+f(x = y)
+
+## the answer is 4 
+```
 
 
 
