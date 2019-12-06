@@ -111,5 +111,121 @@ mean_and_sd(input_x = y)
 
 ## Multiple inputs  
 
+```{r}
+sim_data = tibble(
+  x = rnorm(30, mean = 1, sd = 1),
+  y = 2 + 3 * x + rnorm(30, 0, 1)
+)
+  ## we simulated x, and y is now (2 + 3x + noise on top of it)
+  ## what we'd like to do is find the simple linear regression
+  ## simple linear regression is meant to try to fit a line in the middle of points graphed to find the estimated intercept and estimated slope 
+
+sim_data %>% 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point() 
+
+ls_fit = lm(y ~ x, data = sim_data) ## 'lm' linear model function in R
+  
+beta0_hat = coef(ls_fit)[1] ## this gives us estimated intercept 
+beta1_hat = coef(ls_fit)[2] ## this gives us estiamted slope 
+``` 
+
+Creating a simulation dataset 
+```{r}
+sim_regression = function(n) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = 1, sd = 1),
+    y = 2 + 3 * x + rnorm(n, 0, 1)
+  )
+
+  ls_fit = lm(y ~ x, data = sim_data)  
+  
+  tibble(
+    beta0_hat = coef(ls_fit)[1], 
+    beta1_hat = coef(ls_fit)[2]
+  )
+  
+}
+
+sim_regression(n = 3000)
+
+## it goes and creates a simulated dataframe of size 30
+## it fits a linear regression b/w the y and the simulated dataset
+## it returns a tibble with beta1-hat and beta0-hat 
+## can run it over and over and over and get different estimates 
+## the larger the sample size, the more accurate -- should be closer to 2 and 3 
+```
+
+Changing beta0 and beta1
+```{r}
+sim_regression = function(n, beta0, beta1) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = 1, sd = 1),
+    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+  ) 
+  
+  ## so now a user has to say: what is the intercept and what is the slope in my simulated dataset 
+  ## what is the vertical shift and what is the slope that goes along with this 
+  ## so the user now has to provide 3 arguments: sample size, true intercept, and true slope
+  
+  ls_fit = lm(y ~ x, data = sim_data)  
+  
+  tibble(
+    beta0_hat = coef(ls_fit)[1], 
+    beta1_hat = coef(ls_fit)[2]
+  )
+}
+
+sim_regression(n = 3000, beta0 = 17, beta1 = -3)
+## there are now 3 inputs: n, beta0, and beta1
+## so now I get a simulated dataset of 3,000 subjects, it has a simulated intercept of 17, and a slope of -3
+## I fiddle in the regression and try to extract those coefficients 
+
+
+## can also use 'positional arguments' or 'positional matching'
+sim_regression(3000, 2, 3)
+```
+
+Arguments can also have default values
+```{r}
+## by default, changing beta0 to 2 and beta1 to 3 
+## so if the user doesn't do anything, those are the intercept and the slope right up until the user decides to do something different 
+
+sim_regression = function(n, beta0 = 2, beta1 = 3) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = 1, sd = 1),
+    y = beta0 + beta1 * x + rnorm(n, 0, 1)
+  ) 
+  
+  ls_fit = lm(y ~ x, data = sim_data)  
+  
+  tibble(
+    beta0_hat = coef(ls_fit)[1], 
+    beta1_hat = coef(ls_fit)[2]
+  )
+}
+
+## this automatically assumes the intercept is 2 and slope is 3 
+sim_regression(3000) 
+
+
+## if the user wants to change this so that beta0 is 24, we can do that as well 
+## you can change one of those arguments and not other/all of those arguments
+sim_regression(n = 14, beta0 = 24)
+```
+
+So now we have 3 arguments in my function: sample size, intercept, and slope. My sample is going to generate a dataset with that sample size, and it's going to say that there's an x-variable and a y-variable and they are related through this intercept and slope. And all of those things are now dependent on whatever the user is putting in. 
+
+Given that simulated dataset, we're fitting a simple linear regression and our function spits out a tibble with the estimated intercept and estimated slope based on that dataset. 
+
+
+
+
+
+
+
 
 
